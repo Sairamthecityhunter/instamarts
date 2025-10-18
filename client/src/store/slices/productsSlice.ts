@@ -115,6 +115,30 @@ const productsSlice = createSlice({
         product.inStock = inStock;
       }
     },
+    
+    addProduct: (state, action: PayloadAction<Product>) => {
+      state.products.unshift(action.payload); // Add to beginning of array
+      // Update category count if needed
+      const category = state.categories.find(c => c.id === action.payload.category);
+      if (category) {
+        category.productCount += 1;
+      }
+    },
+    
+    removeProduct: (state, action: PayloadAction<string>) => {
+      const productId = action.payload;
+      const productIndex = state.products.findIndex(p => p.id === productId);
+      if (productIndex !== -1) {
+        const product = state.products[productIndex];
+        state.products.splice(productIndex, 1);
+        
+        // Update category count
+        const category = state.categories.find(c => c.id === product.category);
+        if (category && category.productCount > 0) {
+          category.productCount -= 1;
+        }
+      }
+    },
   },
 });
 
@@ -133,6 +157,8 @@ export const {
   setPage,
   setRecommendations,
   updateProductStock,
+  addProduct,
+  removeProduct,
 } = productsSlice.actions;
 
 export default productsSlice.reducer; 

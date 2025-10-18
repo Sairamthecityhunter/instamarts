@@ -1,4 +1,4 @@
-# 🚀 Swiggy Instamart Setup Guide
+# 🚀 Instamart Setup Guide
 
 ## Quick Start (Local Development)
 

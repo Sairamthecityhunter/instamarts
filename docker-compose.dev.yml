@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # React Frontend (Development)
+  frontend-dev:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_SOCKET_URL=http://localhost:5000
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend-dev
+    networks:
+      - instamart-dev
+
+  # Node.js Backend (Development)
+  backend-dev:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=postgresql://admin:password@postgres-dev:5432/instamart_dev
+      - MONGODB_URI=mongodb://mongo-dev:27017/instamart_dev
+      - REDIS_URL=redis://redis-dev:6379
+      - JWT_SECRET=development-jwt-secret
+    depends_on:
+      - postgres-dev
+      - mongo-dev
+      - redis-dev
+    networks:
+      - instamart-dev
+
+  # PostgreSQL Database (Development)
+  postgres-dev:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=instamart_dev
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - instamart-dev
+
+  # MongoDB (Development)
+  mongo-dev:
+    image: mongo:6.0
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_dev_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    networks:
+      - instamart-dev
+
+  # Redis (Development)
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - instamart-dev
+
+volumes:
+  postgres_dev_data:
+  mongo_dev_data:
+  redis_dev_data:
+
+networks:
+  instamart-dev:
+    driver: bridge

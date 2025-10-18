@@ -15,6 +15,10 @@ import orderRoutes from './routes/orders';
 import userRoutes from './routes/users';
 import addressRoutes from './routes/addresses';
 import subscriptionRoutes from './routes/subscriptions';
+import restaurantRoutes from './routes/restaurants';
+import groceryRoutes from './routes/grocery';
+import paymentRoutes from './routes/payments';
+import notificationRoutes from './routes/notifications';
 import { errorHandler } from './middleware/errorHandler';
 import { authenticateToken } from './middleware/auth';
 
@@ -61,12 +65,16 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/grocery', groceryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', authenticateToken, cartRoutes);
 app.use('/api/orders', authenticateToken, orderRoutes);
 app.use('/api/users', authenticateToken, userRoutes);
 app.use('/api/addresses', authenticateToken, addressRoutes);
 app.use('/api/subscriptions', authenticateToken, subscriptionRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Socket.IO for real-time features
 io.on('connection', (socket) => {

@@ -8,6 +8,8 @@ export interface User {
   avatar?: string;
   isInstamartPlus: boolean;
   addresses: Address[];
+  joinDate?: string;
+  totalOrders?: number;
 }
 
 export interface Address {
@@ -32,10 +34,47 @@ interface AuthState {
   authMode: 'login' | 'signup';
 }
 
+// Helper functions for localStorage operations
+const getUserFromStorage = (): User | null => {
+  try {
+    const userData = localStorage.getItem('freshbazaar_user');
+    return userData ? JSON.parse(userData) : null;
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error);
+    localStorage.removeItem('freshbazaar_user');
+    return null;
+  }
+};
+
+const getTokenFromStorage = (): string | null => {
+  return localStorage.getItem('freshbazaar_token');
+};
+
+const saveUserToStorage = (user: User): void => {
+  try {
+    localStorage.setItem('freshbazaar_user', JSON.stringify(user));
+  } catch (error) {
+    console.error('Error saving user data to localStorage:', error);
+  }
+};
+
+const saveTokenToStorage = (token: string): void => {
+  localStorage.setItem('freshbazaar_token', token);
+};
+
+const clearAuthFromStorage = (): void => {
+  localStorage.removeItem('freshbazaar_user');
+  localStorage.removeItem('freshbazaar_token');
+};
+
+// Initialize state with data from localStorage
+const storedUser = getUserFromStorage();
+const storedToken = getTokenFromStorage();
+
 const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
+  user: storedUser,
+  token: storedToken,
+  isAuthenticated: !!(storedUser && storedToken),
   isLoading: false,
   showAuthModal: false,
   authMode: 'login',
@@ -46,16 +85,24 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+      const { user, token } = action.payload;
+      
+      state.user = user;
+      state.token = token;
       state.isAuthenticated = true;
-      localStorage.setItem('token', action.payload.token);
+      
+      // Save to localStorage
+      saveUserToStorage(user);
+      saveTokenToStorage(token);
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
+      state.showAuthModal = false;
+      
+      // Clear from localStorage
+      clearAuthFromStorage();
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -70,11 +117,15 @@ const authSlice = createSlice({
     updateProfile: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+        // Update localStorage with new user data
+        saveUserToStorage(state.user);
       }
     },
     addAddress: (state, action: PayloadAction<Address>) => {
       if (state.user) {
         state.user.addresses.push(action.payload);
+        // Update localStorage with new user data
+        saveUserToStorage(state.user);
       }
     },
     updateAddress: (state, action: PayloadAction<{ id: string; updates: Partial<Address> }>) => {
@@ -82,13 +133,24 @@ const authSlice = createSlice({
         const index = state.user.addresses.findIndex(addr => addr.id === action.payload.id);
         if (index !== -1) {
           state.user.addresses[index] = { ...state.user.addresses[index], ...action.payload.updates };
+          // Update localStorage with new user data
+          saveUserToStorage(state.user);
         }
       }
     },
     deleteAddress: (state, action: PayloadAction<string>) => {
       if (state.user) {
         state.user.addresses = state.user.addresses.filter(addr => addr.id !== action.payload);
+        // Update localStorage with new user data
+        saveUserToStorage(state.user);
       }
+    },
+    // New action to clear user data if localStorage is corrupted
+    clearCorruptedData: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      clearAuthFromStorage();
     },
   },
 });
@@ -103,6 +165,7 @@ export const {
   addAddress,
   updateAddress,
   deleteAddress,
+  clearCorruptedData,
 } = authSlice.actions;
 
 export default authSlice.reducer; 

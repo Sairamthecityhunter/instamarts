@@ -10,8 +10,9 @@ import {
   FiClock 
 } from 'react-icons/fi';
 import { RootState } from '../../store/store';
-import { showAuthModal } from '../../store/slices/authSlice';
+import { showAuthModal, logout } from '../../store/slices/authSlice';
 import { toggleSidebar } from '../../store/slices/uiSlice';
+import { toast } from 'react-hot-toast';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -21,11 +22,12 @@ const Header: React.FC = () => {
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { totalItems } = useSelector((state: RootState) => state.cart);
   const { deliveryInfo } = useSelector((state: RootState) => state.ui);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
@@ -35,6 +37,12 @@ const Header: React.FC = () => {
     } else {
       dispatch(showAuthModal('login'));
     }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success('Logged out successfully');
+    setShowUserMenu(false);
   };
 
   return (
@@ -52,8 +60,9 @@ const Header: React.FC = () => {
             
             <Link to="/" className="flex items-center ml-2 lg:ml-0">
               <div className="flex items-center">
-                <span className="text-2xl font-bold text-primary-600">Swiggy</span>
-                <span className="ml-1 text-xl font-semibold text-gray-900">Instamart</span>
+                <span className="text-2xl font-bold text-green-600">🛒</span>
+                <span className="ml-2 text-xl font-bold text-gray-900">FreshBazaar</span>
+                <span className="ml-2 text-lg">🇮🇳</span>
               </div>
             </Link>
           </div>
@@ -80,8 +89,8 @@ const Header: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for products..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="Search for groceries, spices, staples..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
               </div>
             </form>
@@ -96,32 +105,138 @@ const Header: React.FC = () => {
             >
               <FiShoppingCart className="h-6 w-6" />
               {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            {/* User Profile */}
-            <button
-              onClick={handleAuthClick}
-              className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900"
-            >
-              <FiUser className="h-6 w-6" />
-              {isAuthenticated && user && (
-                <span className="hidden lg:block text-sm font-medium">
-                  {user.name}
-                </span>
-              )}
-            </button>
+            {/* Quick Links */}
+            <div className="hidden md:flex items-center space-x-6">
+              <Link 
+                to="/instamart" 
+                className="text-green-600 hover:text-green-700 transition-colors font-medium flex items-center gap-1"
+              >
+                ⚡ Instamart
+              </Link>
+              <Link 
+                to="/stores" 
+                className="text-gray-700 hover:text-green-600 transition-colors font-medium"
+              >
+                Stores
+              </Link>
+              <Link 
+                to="/groceries" 
+                className="text-gray-700 hover:text-green-600 transition-colors font-medium"
+              >
+                Groceries
+              </Link>
+              <Link 
+                to="/post-product" 
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-400 transition-colors font-medium"
+              >
+                🏪 Sell Products
+              </Link>
+            </div>
 
-            {/* Instamart+ */}
+            {/* User Profile */}
+            <div className="relative">
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+                  >
+                    <img
+                      src={user?.avatar || 'https://via.placeholder.com/32'}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="hidden md:block">{user?.name}</span>
+                    <span className="text-xs">▼</span>
+                  </button>
+
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      <div className="py-1">
+                        <Link
+                          to="/profile"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          Profile
+                        </Link>
+                        <Link
+                          to="/orders"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          Orders
+                        </Link>
+                        <Link
+                          to="/subscriptions"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          📦 Subscriptions
+                        </Link>
+                        <Link
+                          to="/group-orders"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          👥 Group Orders
+                        </Link>
+                        <Link
+                          to="/addresses"
+                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          Addresses
+                        </Link>
+                        <Link
+                          to="/post-product"
+                          className="block px-4 py-2 text-blue-600 hover:bg-blue-50 font-medium"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          🏪 Sell Products
+                        </Link>
+                        <Link
+                          to="/premium"
+                          className="block px-4 py-2 text-green-600 hover:bg-green-50 font-medium"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          ⭐ Premium
+                        </Link>
+                        <hr className="my-1" />
+                        <button
+                          onClick={handleLogout}
+                          className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <button
+                  onClick={handleAuthClick}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+                >
+                  <FiUser className="h-5 w-5" />
+                  <span className="hidden md:block">Sign In</span>
+                </button>
+              )}
+            </div>
+
+            {/* Premium Badge */}
             {isAuthenticated && user?.isInstamartPlus && (
               <Link
-                to="/instamart-plus"
-                className="hidden lg:flex items-center px-3 py-1 bg-gradient-bg text-white text-sm font-medium rounded-full"
+                to="/premium"
+                className="hidden lg:flex items-center px-3 py-1 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-medium rounded-full"
               >
-                Plus
+                ⭐ Premium
               </Link>
             )}
           </div>

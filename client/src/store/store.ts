@@ -3,6 +3,7 @@ import authSlice from './slices/authSlice';
 import cartSlice from './slices/cartSlice';
 import productsSlice from './slices/productsSlice';
 import uiSlice from './slices/uiSlice';
+import ordersSlice from './slices/ordersSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     cart: cartSlice,
     products: productsSlice,
     ui: uiSlice,
+    orders: ordersSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -1,5 +1,5 @@
 {
-  "name": "swiggy-instamart",
+  "name": "instamart",
   "version": "1.0.0",
   "description": "Hyperlocal Grocery Delivery Platform",
   "main": "server/index.js",
@@ -11,7 +11,7 @@
     "install-all": "npm install && cd server && npm install && cd ../client && npm install"
   },
   "keywords": ["grocery", "delivery", "react", "nodejs"],
-  "author": "Swiggy Instamart Team",
+  "author": "Instamart Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^7.6.0"

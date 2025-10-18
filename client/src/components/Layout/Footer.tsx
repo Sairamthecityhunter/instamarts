@@ -12,11 +12,12 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center mb-4">
-              <span className="text-2xl font-bold text-primary-500">Swiggy</span>
-              <span className="ml-1 text-xl font-semibold">Instamart</span>
+              <span className="text-2xl font-bold text-green-600">🛒</span>
+              <span className="ml-2 text-xl font-bold text-white">Instamart</span>
+              <span className="ml-2 text-lg">🇮🇳➡️🇺🇸</span>
             </div>
             <p className="text-gray-300 mb-4">
-              India's fastest grocery delivery platform. Fresh products delivered to your doorstep in under 20 minutes.
+              Authentic Indian products delivered from India to USA. Bringing the taste of home to your doorstep.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
@@ -76,13 +77,18 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-gray-300 hover:text-white">
+                <Link to="/privacy-policy" className="text-gray-300 hover:text-white">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-300 hover:text-white">
+                <Link to="/terms-of-service" className="text-gray-300 hover:text-white">
                   Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="text-gray-300 hover:text-white">
+                  Refund Policy
                 </Link>
               </li>
             </ul>
@@ -93,11 +99,11 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © {currentYear} Swiggy Instamart. All rights reserved.
+              © {currentYear} Instamart. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <span className="text-gray-400 text-sm">
-                Available in 100+ cities across India
+                🇮🇳 India to 🇺🇸 USA • Authentic Products • Secure Shipping
               </span>
             </div>
           </div>
