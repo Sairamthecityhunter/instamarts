@@ -12,8 +12,8 @@ services:
       - ./client:/app
       - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:5000
-      - REACT_APP_SOCKET_URL=http://localhost:5000
+      - REACT_APP_API_URL=http://localhost:5001
+      - REACT_APP_SOCKET_URL=http://localhost:5001
       - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend-dev
@@ -26,7 +26,7 @@ services:
       context: ./server
       dockerfile: Dockerfile.dev
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - ./server:/app
       - /app/node_modules

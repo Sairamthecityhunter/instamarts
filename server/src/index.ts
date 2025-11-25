@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import dotenv from 'dotenv';
@@ -48,6 +49,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:3000",
   credentials: true
 }));
+app.use(cookieParser());
 app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));

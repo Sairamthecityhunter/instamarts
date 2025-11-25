@@ -1,44 +1,49 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { Request, Response } from 'express';
 import { asyncHandler } from '../middleware/errorHandler';
 import { authenticateToken } from '../middleware/auth';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
 
-// In-memory user storage for demo (use database in production)
-const users: any[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+91 9876543210',
-    password: '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LfHQH.vSU7XDNgUqG', // 'password123'
-    isInstamartPlus: false,
-    addresses: [
-      {
-        id: '1',
-        type: 'home',
-        address: '123 MG Road, Bangalore',
-        city: 'Bangalore',
-        pincode: '560001',
-        coordinates: { lat: 12.9716, lng: 77.5946 },
-        isDefault: true
-      }
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+const JWT_SECRET = process.env.JWT_SECRET || 'your-development-jwt-secret';
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || JWT_SECRET;
+const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '15m';
+const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY || '7d';
 
-// Generate JWT token
-const generateToken = (userId: string) => {
-  return jwt.sign(
-    { userId },
-    process.env.JWT_SECRET || 'your-development-jwt-secret',
-    { expiresIn: '7d' }
-  );
+// Generate access token (short-lived)
+const generateAccessToken = (userId: string) => {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY as any });
+};
+
+// Generate refresh token (long-lived, stored in DB)
+const generateRefreshToken = () => {
+  return crypto.randomBytes(40).toString('hex');
+};
+
+// Set refresh token as httpOnly cookie
+const setRefreshTokenCookie = (res: Response, token: string) => {
+  const expiresIn = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  res.cookie('refreshToken', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: expiresIn,
+    path: '/api/auth',
+  });
+};
+
+// Clear refresh token cookie
+const clearRefreshTokenCookie = (res: Response) => {
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    path: '/api/auth',
+  });
 };
 
 // Register new user
@@ -46,12 +51,20 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
   const { name, email, phone, password } = req.body;
 
   // Validation
-  if (!name || !email || !phone || !password) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Name, email, and password are required' });
   }
 
   // Check if user already exists
-  const existingUser = users.find(user => user.email === email || user.phone === phone);
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email },
+        ...(phone ? [{ phone }] : []),
+      ],
+    },
+  });
+
   if (existingUser) {
     return res.status(400).json({ error: 'User already exists with this email or phone' });
   }
@@ -61,30 +74,49 @@ router.post('/register', asyncHandler(async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // Create new user
-  const newUser = {
-    id: (users.length + 1).toString(),
-    name,
-    email,
-    phone,
-    password: hashedPassword,
-    isInstamartPlus: false,
-    addresses: [],
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
+  const newUser = await prisma.user.create({
+    data: {
+      name,
+      email,
+      phone: phone || null,
+      password: hashedPassword,
+      isInstamartPlus: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      avatar: true,
+      isInstamartPlus: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
-  users.push(newUser);
+  // Generate tokens
+  const accessToken = generateAccessToken(newUser.id);
+  const refreshToken = generateRefreshToken();
 
-  // Generate token
-  const token = generateToken(newUser.id);
+  // Store refresh token in database
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
 
-  // Return user data (without password)
-  const { password: _, ...userWithoutPassword } = newUser;
+  await prisma.refreshToken.create({
+    data: {
+      userId: newUser.id,
+      token: refreshToken,
+      expiresAt,
+    },
+  });
+
+  // Set refresh token as httpOnly cookie
+  setRefreshTokenCookie(res, refreshToken);
 
   res.status(201).json({
     message: 'User registered successfully',
-    user: userWithoutPassword,
-    token
+    user: newUser,
+    accessToken,
   });
 }));
 
@@ -98,7 +130,10 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Find user
-  const user = users.find(u => u.email === email);
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
@@ -109,8 +144,24 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
-  // Generate token
-  const token = generateToken(user.id);
+  // Generate tokens
+  const accessToken = generateAccessToken(user.id);
+  const refreshToken = generateRefreshToken();
+
+  // Store refresh token in database
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+
+  await prisma.refreshToken.create({
+    data: {
+      userId: user.id,
+      token: refreshToken,
+      expiresAt,
+    },
+  });
+
+  // Set refresh token as httpOnly cookie
+  setRefreshTokenCookie(res, refreshToken);
 
   // Return user data (without password)
   const { password: _, ...userWithoutPassword } = user;
@@ -118,52 +169,126 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
   res.json({
     message: 'Login successful',
     user: userWithoutPassword,
-    token
+    accessToken,
+  });
+}));
+
+// Refresh access token using refresh token from cookie
+router.post('/refresh', asyncHandler(async (req: Request, res: Response) => {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Refresh token required' });
+  }
+
+  // Find refresh token in database
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken },
+    include: { user: true },
+  });
+
+  if (!storedToken) {
+    clearRefreshTokenCookie(res);
+    return res.status(401).json({ error: 'Invalid refresh token' });
+  }
+
+  // Check if token is expired
+  if (storedToken.expiresAt < new Date()) {
+    await prisma.refreshToken.delete({ where: { id: storedToken.id } });
+    clearRefreshTokenCookie(res);
+    return res.status(401).json({ error: 'Refresh token expired' });
+  }
+
+  // Generate new access token
+  const accessToken = generateAccessToken(storedToken.userId);
+
+  res.json({
+    accessToken,
   });
 }));
 
 // Get current user profile
 router.get('/me', authenticateToken, asyncHandler(async (req: any, res: Response) => {
-  const user = users.find(u => u.id === req.userId);
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      avatar: true,
+      isInstamartPlus: true,
+      addresses: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
   }
 
-  const { password: _, ...userWithoutPassword } = user;
-  res.json({ user: userWithoutPassword });
+  res.json({ user });
 }));
 
 // Update user profile
 router.put('/me', authenticateToken, asyncHandler(async (req: any, res: Response) => {
-  const { name, phone } = req.body;
+  const { name, phone, avatar } = req.body;
 
-  const userIndex = users.findIndex(u => u.id === req.userId);
-  if (userIndex === -1) {
-    return res.status(404).json({ error: 'User not found' });
-  }
+  const updatedUser = await prisma.user.update({
+    where: { id: req.userId },
+    data: {
+      ...(name && { name }),
+      ...(phone && { phone }),
+      ...(avatar !== undefined && { avatar }),
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      avatar: true,
+      isInstamartPlus: true,
+      addresses: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
-  // Update user
-  if (name) users[userIndex].name = name;
-  if (phone) users[userIndex].phone = phone;
-  users[userIndex].updatedAt = new Date();
-
-  const { password: _, ...userWithoutPassword } = users[userIndex];
   res.json({
     message: 'Profile updated successfully',
-    user: userWithoutPassword
+    user: updatedUser,
   });
 }));
 
-// Refresh token
-router.post('/refresh', authenticateToken, asyncHandler(async (req: any, res: Response) => {
-  const newToken = generateToken(req.userId);
-  res.json({ token: newToken });
+// Logout - invalidate refresh token
+router.post('/logout', authenticateToken, asyncHandler(async (req: any, res: Response) => {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (refreshToken) {
+    await prisma.refreshToken.deleteMany({
+      where: {
+        userId: req.userId,
+        token: refreshToken,
+      },
+    });
+  }
+
+  clearRefreshTokenCookie(res);
+
+  res.json({ message: 'Logged out successfully' });
 }));
 
-// Logout (client-side token removal)
-router.post('/logout', (req: Request, res: Response) => {
-  res.json({ message: 'Logged out successfully' });
-});
+// Logout from all devices
+router.post('/logout-all', authenticateToken, asyncHandler(async (req: any, res: Response) => {
+  await prisma.refreshToken.deleteMany({
+    where: { userId: req.userId },
+  });
+
+  clearRefreshTokenCookie(res);
+
+  res.json({ message: 'Logged out from all devices successfully' });
+}));
 
 // Send OTP for phone verification (mock implementation)
 router.post('/send-otp', asyncHandler(async (req: Request, res: Response) => {
@@ -175,14 +300,14 @@ router.post('/send-otp', asyncHandler(async (req: Request, res: Response) => {
 
   // Mock OTP generation
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  
+
   // In production, send actual SMS via Twilio/AWS SNS
   console.log(`OTP for ${phone}: ${otp}`);
 
   res.json({
     message: 'OTP sent successfully',
     // In development, return OTP for testing
-    ...(process.env.NODE_ENV === 'development' && { otp })
+    ...(process.env.NODE_ENV === 'development' && { otp }),
   });
 }));
 
@@ -202,4 +327,4 @@ router.post('/verify-otp', asyncHandler(async (req: Request, res: Response) => {
   }
 }));
 
-export default router; 
+export default router;

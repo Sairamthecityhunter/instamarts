@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  phone           String?   @unique
+  name            String
+  password        String
+  avatar          String?
+  isInstamartPlus Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  addresses       Address[]
+  orders          Order[]
+  cartItems       CartItem[]
+  refreshTokens   RefreshToken[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // 'home', 'work', 'other'
+  address     String
+  city        String
+  state       String?
+  pincode     String
+  country     String   @default("India")
+  coordinates Json?    // { lat: number, lng: number }
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String?
+  icon        String?
+  productCount Int      @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+
+  @@index([slug])
+}
+
+model Product {
+  id            String    @id @default(uuid())
+  name          String
+  slug          String    @unique
+  description   String?
+  price         Float
+  originalPrice Float?
+  image         String
+  images        String[]  @default([])
+  categoryId    String
+  brand         String?
+  unit          String    // '1 kg', '500g', etc.
+  inStock       Boolean   @default(true)
+  stockQuantity Int       @default(0)
+  rating        Float     @default(0)
+  reviewCount   Int       @default(0)
+  tags          String[]  @default([])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  category      Category  @relation(fields: [categoryId], references: [id])
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+
+  @@index([categoryId])
+  @@index([slug])
+  @@index([name])
+  @@index([inStock])
+  @@index([price])
+  // Note: Full-text search requires PostgreSQL with pg_trgm extension
+  // Uncomment after running: CREATE EXTENSION IF NOT EXISTS pg_trgm;
+  // @@fulltext([name, description, tags])
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  userId          String
+  status          String      @default("pending") // pending, confirmed, processing, shipped, delivered, cancelled
+  totalAmount     Float
+  subtotal        Float
+  tax             Float       @default(0)
+  shipping        Float       @default(0)
+  discount        Float       @default(0)
+  paymentMethod   String?
+  paymentStatus   String      @default("pending") // pending, paid, failed, refunded
+  shippingAddress Json
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  price       Float    // Price at time of order
+  productName String
+  productImage String?
+  createdAt   DateTime @default(now())
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+

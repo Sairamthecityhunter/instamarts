@@ -1,4 +1,5 @@
 import express from 'express';
+// @ts-ignore
 import nodemailer from 'nodemailer';
 import { authenticateToken } from '../middleware/auth';
 
