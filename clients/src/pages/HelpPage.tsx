@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
 
 interface FAQItem {
   id: string;
@@ -146,10 +145,6 @@ const HelpPage: React.FC = () => {
     alert('Thank you for contacting us. We\'ll get back to you within 24 hours.');
     setShowContactForm(false);
     setContactForm({ name: '', email: '', phone: '', issue: '', description: '' });
-  };
-
-  const handleEmailContact = () => {
-    window.open('mailto:support@freshbazaar.com');
   };
 
   return (

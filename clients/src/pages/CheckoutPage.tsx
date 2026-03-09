@@ -30,7 +30,6 @@ const CheckoutPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [deliveryInstructions, setDeliveryInstructions] = useState('');
   const [taxCalculation, setTaxCalculation] = useState<TaxCalculation | null>(null);
-  const [selectedState, setSelectedState] = useState<string>('');
 
   // Check if user is authenticated
   if (!isAuthenticated || !user) {
@@ -261,7 +260,7 @@ const CheckoutPage: React.FC = () => {
               subtotal={subtotalUSD}
               productCategories={items.map(item => item.product.category || 'default')}
               onTaxCalculated={setTaxCalculation}
-              selectedState={selectedState}
+              selectedState=""
             />
 
             {/* Delivery Instructions */}

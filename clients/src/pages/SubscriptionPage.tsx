@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
 import { toast } from 'react-hot-toast';
 import { 
   FiPlus, 
@@ -47,13 +45,14 @@ interface SubscriptionTemplate {
 }
 
 const SubscriptionPage: React.FC = () => {
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [templates, setTemplates] = useState<SubscriptionTemplate[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showCreateModal, setShowCreateModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [showEditModal, setShowEditModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadSubscriptions();
@@ -129,8 +128,6 @@ const SubscriptionPage: React.FC = () => {
     } catch (error) {
       console.error('Error loading subscriptions:', error);
       toast.error('Failed to load subscriptions');
-    } finally {
-      setLoading(false);
     }
   };
 

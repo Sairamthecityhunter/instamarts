@@ -4,95 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { 
   FiSearch, 
   FiShoppingCart, 
-  FiUser, 
   FiMenu,
 } from 'react-icons/fi';
 import { RootState } from '../../store/store';
 import { showAuthModal, logout } from '../../store/slices/authSlice';
 import { toggleSidebar } from '../../store/slices/uiSlice';
 import { toast } from 'react-hot-toast';
-
-// Category menu data
-const categoryMenu = [
-  {
-    id: 'beauty-cosmetics',
-    name: 'BEAUTY & COSMETICS',
-    icon: '💄',
-    subcategories: ['SKINCARE', 'COSMETICS ITEMS', 'FACE CARE', 'BABY CARE', 'DENTAL CARE', 'PERSONAL CARE', 'HAIR CARE', 'MEDICINE', 'HAND WASH', 'MORE']
-  },
-  {
-    id: 'grocery',
-    name: 'GROCERY',
-    icon: '🛒',
-    subcategories: ['Spices & Masalas', 'Staples & Grains', 'Snacks & Namkeens', 'Beverages', 'Fresh Produce', 'Dairy Products']
-  },
-  {
-    id: 'stationery',
-    name: 'STATIONERY',
-    icon: '📝',
-    subcategories: ['Pens & Pencils', 'Notebooks', 'Office Supplies', 'Art Supplies', 'School Supplies']
-  },
-  {
-    id: 'fruits-vegetables',
-    name: 'FRUITS & VEGETABLES',
-    icon: '🍎',
-    subcategories: ['Fresh Fruits', 'Fresh Vegetables', 'Organic Produce', 'Exotic Fruits', 'Seasonal Vegetables']
-  },
-  {
-    id: 'outdoor',
-    name: 'OUTDOOR',
-    icon: '⛺',
-    subcategories: ['Camping Gear', 'Outdoor Furniture', 'Garden Supplies', 'BBQ & Grilling']
-  },
-  {
-    id: 'household',
-    name: 'HOUSEHOLD',
-    icon: '🏠',
-    subcategories: ['Cleaning Supplies', 'Home Decor', 'Kitchenware', 'Storage Solutions', 'Bedding & Bath']
-  },
-  {
-    id: 'snacks-refreshments',
-    name: 'SNACKS & REFRESHMENTS',
-    icon: '🥤',
-    subcategories: ['Chips & Crackers', 'Beverages', 'Candy & Sweets', 'Energy Drinks', 'Juices']
-  },
-  {
-    id: 'dairy',
-    name: 'GOODS AND DAIRY',
-    icon: '🥛',
-    subcategories: ['Milk Products', 'Cheese', 'Yogurt', 'Butter & Ghee', 'Plant-based Alternatives']
-  },
-  {
-    id: 'roastery',
-    name: 'ROASTERY',
-    icon: '☕',
-    subcategories: ['Coffee Beans', 'Roasted Nuts', 'Coffee Products', 'Tea Selection']
-  },
-  {
-    id: 'fishery',
-    name: 'FISHERY',
-    icon: '🐟',
-    subcategories: ['Fresh Fish', 'Frozen Seafood', 'Canned Fish', 'Fish Products']
-  },
-  {
-    id: 'bakery',
-    name: 'BAKERY',
-    icon: '🍞',
-    subcategories: ['Fresh Bread', 'Pastries', 'Cakes', 'Cookies', 'Traditional Breads']
-  },
-  {
-    id: 'delicatessen',
-    name: 'DELICATESSEN',
-    icon: '🥗',
-    subcategories: ['Cold Cuts', 'Cheese Selection', 'Olives & Pickles', 'Prepared Foods']
-  },
-  {
-    id: 'butchery',
-    name: 'BUTCHERY',
-    icon: '🥩',
-    subcategories: ['Fresh Meat', 'Poultry', 'Lamb & Goat', 'Processed Meats']
-  },
-];
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();

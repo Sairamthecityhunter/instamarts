@@ -46,7 +46,6 @@ interface Store {
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { products: storeProducts } = useSelector((state: RootState) => state.products);
   const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
   const [categories, setCategories] = useState<GroceryCategory[]>([]);
@@ -58,6 +57,7 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     loadHomeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadHomeData = async () => {

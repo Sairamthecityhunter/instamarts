@@ -53,7 +53,6 @@ interface DeliverySlot {
 
 const InstamartPage: React.FC = () => {
   const dispatch = useDispatch();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { products: storeProducts } = useSelector((state: RootState) => state.products);
   const [products, setProductsState] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -149,6 +148,7 @@ const InstamartPage: React.FC = () => {
   useEffect(() => {
     loadProducts();
     loadRecentPurchases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update local state when Redux store products change

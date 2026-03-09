@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FiSearch, FiChevronRight } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/slices/cartSlice';
 import { toast } from 'react-hot-toast';
 import LoadingSpinner from '../components/UI/LoadingSpinner';
-import CurrencyConverter from '../components/International/CurrencyConverter';
 import { apiClient } from '../utils/api';
 import { getCategoryImage } from '../utils/images';
 import ProductCard from '../components/UI/ProductCard';
@@ -154,8 +153,6 @@ const MenuPage: React.FC = () => {
     ? categoryMenu.find(cat => cat.id === selectedCategory)
     : null;
 
-  // Get database slug for API
-  const categorySlug = selectedCategory ? categorySlugMap[selectedCategory] : null;
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -175,6 +172,7 @@ const MenuPage: React.FC = () => {
     } else {
       setProducts([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, sortBy]);
 
   const loadProducts = async () => {
@@ -218,7 +216,6 @@ const MenuPage: React.FC = () => {
       // Only show specific error messages for server errors that aren't handled by interceptor
       if (error.response) {
         // Server responded with error status
-        const status = error.response.status;
         // Interceptor handles 401, so we don't need to show it again
         // For other errors, let the interceptor handle it (it already shows toast)
         // We just need to handle the case where products array might be in different format
@@ -302,10 +299,6 @@ const MenuPage: React.FC = () => {
     }
   });
 
-  const filteredCategories = categoryMenu.filter(category =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.subcategories.some(sub => sub.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">

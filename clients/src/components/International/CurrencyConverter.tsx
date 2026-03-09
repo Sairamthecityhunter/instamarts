@@ -13,14 +13,12 @@ const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
   className = '',
   showINR = false 
 }) => {
-  const [exchangeRate, setExchangeRate] = useState<number>(0.012);
   const [usdPrice, setUsdPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const loadRate = async () => {
       const rate = await fetchExchangeRate();
-      setExchangeRate(rate);
       setUsdPrice(convertINRtoUSD(inrPrice, rate));
     };
     loadRate();
@@ -30,7 +28,6 @@ const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
     setLoading(true);
     try {
       const rate = await fetchExchangeRate();
-      setExchangeRate(rate);
       setUsdPrice(convertINRtoUSD(inrPrice, rate));
     } catch (error) {
       console.error('Failed to refresh exchange rate:', error);

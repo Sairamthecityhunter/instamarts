@@ -23,7 +23,6 @@ const OrderTrackingPage: React.FC = () => {
   const { orders } = useSelector((state: RootState) => state.orders);
   const { formatPrice } = useCurrency();
   const [currentOrder, setCurrentOrder] = useState<any>(null);
-  const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -37,7 +36,6 @@ const OrderTrackingPage: React.FC = () => {
       const order = orders.find(o => o.id === orderId);
       if (order) {
         setCurrentOrder(order);
-        setCurrentStep(getStepFromStatus(order.status));
       } else {
         toast.error('Order not found');
         navigate('/orders');
@@ -45,17 +43,6 @@ const OrderTrackingPage: React.FC = () => {
       setIsLoading(false);
     }
   }, [orders, orderId, navigate]);
-
-  const getStepFromStatus = (status: string): number => {
-    switch (status) {
-      case 'confirmed': return 0;
-      case 'preparing': return 1;
-      case 'out_for_delivery': return 2;
-      case 'delivered': return 3;
-      case 'cancelled': return -1;
-      default: return 0;
-    }
-  };
 
   const getOrderStatuses = (orderStatus: string): OrderStatus[] => {
     const baseStatuses = [
@@ -153,7 +140,6 @@ const OrderTrackingPage: React.FC = () => {
       
       // Update current order state
       setCurrentOrder({ ...currentOrder, status: 'cancelled' });
-      setCurrentStep(-1);
       
     } catch (error) {
       toast.error('Failed to cancel order. Please try again.');
