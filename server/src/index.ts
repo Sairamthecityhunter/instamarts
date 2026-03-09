@@ -20,6 +20,7 @@ import restaurantRoutes from './routes/restaurants';
 import groceryRoutes from './routes/grocery';
 import paymentRoutes from './routes/payments';
 import notificationRoutes from './routes/notifications';
+import contactRoutes from './routes/contact';
 import { errorHandler } from './middleware/errorHandler';
 import { authenticateToken } from './middleware/auth';
 
@@ -77,6 +78,7 @@ app.use('/api/addresses', authenticateToken, addressRoutes);
 app.use('/api/subscriptions', authenticateToken, subscriptionRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Socket.IO for real-time features
 io.on('connection', (socket) => {

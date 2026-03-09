@@ -6,14 +6,20 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
-    "client": "cd client && npm start",
-    "build": "cd client && npm run build",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+    "client": "cd clients && npm start",
+    "build": "cd clients && npm run build",
+    "install-all": "npm install && cd server && npm install && cd ../clients && npm install"
   },
-  "keywords": ["grocery", "delivery", "react", "nodejs"],
+  "keywords": [
+    "grocery",
+    "delivery",
+    "react",
+    "nodejs"
+  ],
   "author": "Instamart Team",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "html-webpack-plugin": "^5.6.5"
   }
-} 
+}
