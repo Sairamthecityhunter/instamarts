@@ -10,8 +10,8 @@ const CartPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items, totalAmount, deliveryFee, freeDeliveryThreshold } = useSelector((state: RootState) => state.cart);
-  const [isLoading, setIsLoading] = useState(false);
-  const { formatPrice, toUSD } = useCurrency();
+  const [isLoading] = useState(false);
+  const { formatPrice } = useCurrency();
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {

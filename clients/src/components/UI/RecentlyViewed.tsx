@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { RootState } from '../../store/store';
-import ProductCard from './ProductCard';
 
 const RecentlyViewed: React.FC = () => {
   const recentlyViewed = useSelector((state: RootState) => state.recentlyViewed.items);

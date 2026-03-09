@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
 import { addProduct } from '../store/slices/productsSlice';
 import { toast } from 'react-hot-toast';
-import { FiUpload, FiX, FiDollarSign, FiPackage, FiImage, FiTag, FiFileText, FiStar } from 'react-icons/fi';
+import { FiUpload, FiX, FiDollarSign, FiStar } from 'react-icons/fi';
 
 interface ProductFormData {
   name: string;

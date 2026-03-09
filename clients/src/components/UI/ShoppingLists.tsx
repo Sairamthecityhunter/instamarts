@@ -9,7 +9,6 @@ import {
   removeItemFromList,
   toggleItemChecked,
   setActiveList,
-  ShoppingList,
 } from '../../store/slices/shoppingListsSlice';
 import { toast } from 'react-hot-toast';
 

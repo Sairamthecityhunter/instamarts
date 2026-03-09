@@ -48,6 +48,7 @@ const StorePage: React.FC = () => {
 
   useEffect(() => {
     loadStoreData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   const loadStoreData = async () => {

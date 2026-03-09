@@ -64,13 +64,14 @@ const ProductDetailPage: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     loadProductData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadProductData = async () => {

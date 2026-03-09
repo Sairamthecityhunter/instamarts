@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FiBell, FiBellOff } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
-import { addPriceAlert, removePriceAlert, PriceAlert } from '../../store/slices/priceAlertsSlice';
+import { addPriceAlert, removePriceAlert } from '../../store/slices/priceAlertsSlice';
 import { RootState } from '../../store/store';
 import { toast } from 'react-hot-toast';
 import CurrencyConverter from '../International/CurrencyConverter';

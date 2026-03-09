@@ -10,8 +10,6 @@ import {
   FiCheck,
   FiClock,
   FiDollarSign,
-  FiTruck,
-  FiUser,
   FiShoppingCart,
   FiPercent
 } from 'react-icons/fi';
@@ -53,11 +51,11 @@ interface CreateGroupOrderForm {
 }
 
 const GroupOrderPage: React.FC = () => {
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const [groupOrders, setGroupOrders] = useState<GroupOrder[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<GroupOrder | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
   const [createForm, setCreateForm] = useState<CreateGroupOrderForm>({
     name: '',
     minOrder: 500,
@@ -67,7 +65,6 @@ const GroupOrderPage: React.FC = () => {
     category: 'general',
     description: ''
   });
-  const [loading, setLoading] = useState(true);
   const [shareLink, setShareLink] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
 
