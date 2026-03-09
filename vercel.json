@@ -1,6 +1,18 @@
 {
-  "buildCommand": "cd clients && npm ci && npm run build",
-  "outputDirectory": "clients/build",
-  "installCommand": "cd clients && npm ci",
-  "framework": "create-react-app"
+  "version": 2,
+  "builds": [
+    {
+      "src": "clients/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/clients/$1"
+    }
+  ]
 }
