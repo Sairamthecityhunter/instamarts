@@ -96,13 +96,13 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+        <div className="mt-12 pt-8 border-t border-gray-800 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <p className="text-gray-400 text-sm break-words px-2 md:px-0">
               © {currentYear} Instamart. All rights reserved.
             </p>
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <span className="text-gray-400 text-sm">
+            <div className="flex items-center justify-center md:justify-end mt-0 md:mt-0 px-2">
+              <span className="text-gray-400 text-sm break-words max-w-full">
                 🇮🇳 India to 🇺🇸 USA • Authentic Products • Secure Shipping
               </span>
             </div>

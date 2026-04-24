@@ -136,13 +136,13 @@ const MobileSidebar: React.FC = () => {
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto md:hidden">
+      <div className="fixed top-0 left-0 h-full w-[min(20rem,calc(100vw-1rem))] max-w-[100vw] bg-white shadow-xl z-50 overflow-y-auto overflow-x-hidden md:hidden pt-[env(safe-area-inset-top)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-          <div className="flex items-center">
-            <FiShoppingCart className="text-2xl text-green-600" />
-            <span className="ml-2 text-xl font-bold text-gray-900">FreshBazaar</span>
-            <span className="ml-2 text-lg">🇮🇳</span>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 bg-white gap-2 min-w-0">
+          <div className="flex items-center min-w-0">
+            <FiShoppingCart className="text-xl sm:text-2xl text-green-600 shrink-0" />
+            <span className="ml-2 text-base sm:text-xl font-bold text-gray-900 truncate">FreshBazaar</span>
+            <span className="ml-1 text-base sm:text-lg shrink-0">🇮🇳</span>
           </div>
           <button
             onClick={handleClose}
@@ -316,7 +316,7 @@ const MobileSidebar: React.FC = () => {
 
         {/* Logout Button */}
         {isAuthenticated && (
-          <div className="border-t border-gray-200 p-4">
+          <div className="border-t border-gray-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))]">
             <button
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
