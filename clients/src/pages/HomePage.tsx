@@ -541,64 +541,65 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-4 mb-6">
-                <h1 className="text-5xl font-bold">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-10 sm:py-14 md:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="min-w-0 w-full max-w-full">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight break-words min-w-0">
                   Welcome to <span className="text-yellow-300">FreshBazaar</span>
                 </h1>
                 <button
-                  onClick={() => window.location.href = '/instamart'}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
+                  type="button"
+                  onClick={() => { window.location.href = '/instamart'; }}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto sm:mt-1 touch-manipulation"
                 >
-                  <span className="text-lg">⚡</span>
+                  <span className="text-base sm:text-lg" aria-hidden>⚡</span>
                   Select Here
                 </button>
               </div>
-              <p className="text-xl text-green-100 mb-8 leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-green-100 mb-6 sm:mb-8 leading-relaxed break-words">
                 Bringing authentic Indian products from India to USA. From traditional spices to regional specialties,
                 we deliver the taste of India directly to your American doorstep.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Link
                   to="/groceries"
-                  className="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-center"
+                  className="bg-white text-green-600 px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-center"
                 >
                   Shop Groceries
                 </Link>
                 <Link
                   to="/stores"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors text-center"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors text-center"
                 >
                   Browse Stores
                 </Link>
               </div>
-              <div className="mt-8 flex items-center gap-8 text-green-100">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🇮🇳</span>
-                  <span>Shipped from India</span>
+              <div className="mt-6 sm:mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center text-green-100 text-sm sm:text-base">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xl sm:text-2xl shrink-0" aria-hidden>🇮🇳</span>
+                  <span className="break-words">Shipped from India</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🇺🇸</span>
-                  <span>Delivered to USA</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xl sm:text-2xl shrink-0" aria-hidden>🇺🇸</span>
+                  <span className="break-words">Delivered to USA</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">📦</span>
-                  <span>Customs included</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xl sm:text-2xl shrink-0" aria-hidden>📦</span>
+                  <span className="break-words">Customs included</span>
                 </div>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative min-w-0 w-full max-w-full">
               <img
                 src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600"
                 alt="Fresh Indian Groceries"
-                className="rounded-lg shadow-2xl"
+                className="rounded-lg shadow-2xl w-full max-w-full h-auto object-cover"
               />
-              <div className="absolute -bottom-6 -left-6 bg-yellow-400 text-gray-900 px-6 py-4 rounded-lg shadow-lg">
-                <div className="text-2xl font-bold">500+</div>
-                <div className="text-sm">Products Available</div>
+              <div className="absolute bottom-2 left-2 sm:-bottom-4 sm:-left-2 md:-bottom-6 md:-left-6 bg-yellow-400 text-gray-900 px-4 py-3 sm:px-6 sm:py-4 rounded-lg shadow-lg max-w-[calc(100%-1rem)]">
+                <div className="text-xl sm:text-2xl font-bold">500+</div>
+                <div className="text-xs sm:text-sm">Products Available</div>
               </div>
             </div>
           </div>

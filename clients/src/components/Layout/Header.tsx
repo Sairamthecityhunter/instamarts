@@ -5,6 +5,7 @@ import {
   FiSearch, 
   FiShoppingCart, 
   FiMenu,
+  FiUser,
 } from 'react-icons/fi';
 import { RootState } from '../../store/store';
 import { showAuthModal, logout } from '../../store/slices/authSlice';
@@ -210,14 +211,23 @@ const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={handleAuthClick}
-                className="bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base px-3 py-1.5 sm:px-6 sm:py-2 rounded-lg font-medium transition-colors whitespace-nowrap touch-manipulation"
-              >
-                <span className="sm:hidden">Login</span>
-                <span className="hidden sm:inline">Login / Register</span>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={handleAuthClick}
+                  className="md:hidden p-2 rounded-lg bg-green-600 hover:bg-green-700 text-white touch-manipulation"
+                  aria-label="Login or register"
+                >
+                  <FiUser className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAuthClick}
+                  className="hidden md:inline-flex bg-green-600 hover:bg-green-700 text-white text-sm lg:text-base px-4 py-2 lg:px-6 lg:py-2 rounded-lg font-medium transition-colors whitespace-nowrap touch-manipulation items-center justify-center"
+                >
+                  Login / Register
+                </button>
+              </>
             )}
           </div>
         </div>
