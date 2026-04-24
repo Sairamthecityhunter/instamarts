@@ -97,8 +97,12 @@ export const LiveChat: React.FC<LiveChatProps> = ({ isOpen, onToggle }) => {
   if (!isOpen) {
     return (
       <button
+        type="button"
         onClick={onToggle}
-        className="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50"
+        className="fixed z-50 bg-blue-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-blue-700 transition-colors touch-manipulation
+          bottom-[max(1rem,env(safe-area-inset-bottom,0px))]
+          right-[max(1rem,env(safe-area-inset-right,0px))]"
+        aria-label="Open chat"
       >
         <FiMessageCircle className="w-6 h-6" />
       </button>
@@ -106,7 +110,16 @@ export const LiveChat: React.FC<LiveChatProps> = ({ isOpen, onToggle }) => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-lg shadow-xl border flex flex-col z-50">
+    <div
+      className="fixed z-50 bg-white rounded-lg shadow-xl border flex flex-col
+        inset-x-4 sm:inset-x-auto sm:left-auto
+        bottom-[max(1rem,env(safe-area-inset-bottom,0px))]
+        right-[max(1rem,env(safe-area-inset-right,0px))]
+        w-auto sm:w-80
+        max-w-[calc(100vw-2rem)] sm:max-w-[20rem]
+        h-[min(24rem,calc(100dvh-6rem))] sm:h-96
+        max-h-[85dvh]"
+    >
       {/* Header */}
       <div className="bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between">
         <div className="flex items-center gap-2">

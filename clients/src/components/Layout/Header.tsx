@@ -39,16 +39,18 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+    <header className="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm pt-[env(safe-area-inset-top)]">
       {/* Top Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-1 min-w-0">
           {/* Logo on Left */}
-          <Link to="/" className="flex items-center">
-            <div className="flex items-center">
-              <FiShoppingCart className="text-2xl text-green-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">FreshBazaar</span>
-              <span className="ml-2 text-lg">🇮🇳</span>
+          <Link to="/" className="flex items-center min-w-0 shrink-0">
+            <div className="flex items-center min-w-0">
+              <FiShoppingCart className="text-xl sm:text-2xl text-green-600 shrink-0" />
+              <span className="ml-1 sm:ml-2 text-base sm:text-xl font-bold text-gray-900 truncate max-w-[6.5rem] sm:max-w-none">
+                FreshBazaar
+              </span>
+              <span className="ml-1 sm:ml-2 text-base sm:text-lg hidden sm:inline shrink-0">🇮🇳</span>
             </div>
           </Link>
 
@@ -120,19 +122,12 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Right Side - Search, Cart, User Menu */}
-          <div className="flex items-center space-x-4">
-            {/* Search Icon - Mobile */}
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 shrink-0 min-w-0">
             <button
+              type="button"
               onClick={() => navigate('/search')}
-              className="md:hidden p-2 text-gray-600 hover:text-gray-900"
-            >
-              <FiSearch className="h-5 w-5" />
-            </button>
-
-            {/* Search Icon - Desktop */}
-            <button
-              onClick={() => navigate('/search')}
-              className="hidden md:block p-2 text-gray-600 hover:text-gray-900"
+              className="p-2 text-gray-600 hover:text-gray-900 touch-manipulation"
+              aria-label="Search"
             >
               <FiSearch className="h-5 w-5" />
             </button>
@@ -152,8 +147,10 @@ const Header: React.FC = () => {
 
             {/* Mobile Menu */}
             <button
+              type="button"
               onClick={() => dispatch(toggleSidebar())}
-              className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 touch-manipulation"
+              aria-label="Open menu"
             >
               <FiMenu className="h-6 w-6" />
             </button>
@@ -162,11 +159,12 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-gray-900"
+                  className="flex items-center space-x-1 sm:space-x-2 text-gray-700 hover:text-gray-900 max-w-[5rem] sm:max-w-[10rem] md:max-w-none"
                 >
-                  <span className="font-medium">{user?.name || 'User'}</span>
-                  <span className="text-xs text-gray-500">▼</span>
+                  <span className="font-medium text-sm sm:text-base truncate">{user?.name || 'User'}</span>
+                  <span className="text-xs text-gray-500 shrink-0 hidden sm:inline">▼</span>
                 </button>
 
                 {showUserMenu && (
@@ -213,10 +211,12 @@ const Header: React.FC = () => {
               </div>
             ) : (
               <button
+                type="button"
                 onClick={handleAuthClick}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                className="bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base px-3 py-1.5 sm:px-6 sm:py-2 rounded-lg font-medium transition-colors whitespace-nowrap touch-manipulation"
               >
-                Login / Register
+                <span className="sm:hidden">Login</span>
+                <span className="hidden sm:inline">Login / Register</span>
               </button>
             )}
           </div>

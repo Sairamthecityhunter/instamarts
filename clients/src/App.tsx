@@ -65,10 +65,10 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <StripeProvider>
             <Router>
-              <div className="App min-h-screen bg-gray-50">
+              <div className="App min-h-screen bg-gray-50 w-full max-w-[100vw] overflow-x-hidden">
                 <Header />
                 <MobileSidebar />
-                <main className="min-h-screen">
+                <main className="min-h-screen w-full overflow-x-hidden">
                   <Routes>
                   {/* Main Pages */}
                   <Route path="/" element={<HomePage />} />
@@ -138,11 +138,17 @@ function App() {
               <FacebookPixelTracker />
               <Toaster 
                 position="bottom-center"
+                containerStyle={{
+                  bottom: 'max(1rem, env(safe-area-inset-bottom, 0px))',
+                  left: 'max(0.5rem, env(safe-area-inset-left, 0px))',
+                  right: 'max(0.5rem, env(safe-area-inset-right, 0px))',
+                }}
                 toastOptions={{
                   duration: 3000,
                   style: {
                     background: '#2D7D32',
                     color: '#fff',
+                    maxWidth: 'min(100vw - 2rem, 24rem)',
                   },
                 }}
               />
